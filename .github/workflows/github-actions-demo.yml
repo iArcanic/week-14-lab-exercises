@@ -1,18 +1,33 @@
-name: GitHub Actions
-run-name: ${{ github.actor }} GitHub Actions 🚀
+name: GitHub CI/CD Pipelining Actions
+run-name: ${{ github.actor }} GitHub CI/CD Pipelining Actions 🚀
 on: [push]
+
 jobs:
-  Explore-GitHub-Actions:
+  CI-Insecure-Modules-Test:
     runs-on: ubuntu-latest
+    env:
+      working-directory-insecure: ./insecure
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: (cd insecure && npm install)
+      - run: echo "npm is now checking for vulnerabilities"
+      - run: (cd insecure && npm audit)
+
+  CI-Messed-Up-JS-Detection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: (cd mashup && npm install)
+      - name: Check our linter for errors
+        run: (cd mashup && npm install lint)
+
+  CI-Run-Unit-Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: (cd unittesting && npm install)
+      - name: Check out our unit tests
+        run: (cd unittesting && npm run test)
